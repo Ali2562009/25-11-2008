@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hey</title>
+
+  <!-- Google Fonts: Libre Baskerville for body, Great Vibes for handwriting -->
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-dark: #121212;
+      --paper: #d9cfc4;
+      --accent: #a68462;
+      --wood: #4a3b2c;
+      --ink: #5a3e2b; /* deep brown ink */
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: 'Libre Baskerville', serif;
+      background: var(--bg-dark);
+      color: var(--paper);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      user-select:none;
+    }
+
+    /* ---------- full-screen dreamy blurred art layer ---------- */
+    .art-bg {
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      filter: blur(10px) saturate(0.95) contrast(0.95);
+      opacity:0.55;
+    }
+
+    /* Use two images side-by-side blended together for painterly effect */
+    .art-bg::before,
+    .art-bg::after{
+      content:"";
+      position:absolute;
+      top:0;left:0;
+      width:100%;height:100%;
+      background-position:center;
+      background-size:cover;
+      background-repeat:no-repeat;
+      mix-blend-mode:overlay;
+      transform-origin:center;
+      transform:scale(1.05);
+    }
+
+    /* Mona Lisa (left, darker) */
+    .art-bg::before{
+      background-image: url("https://upload.wikimedia.org/wikipedia/commons/6/6a/Mona_Lisa.jpg");
+      opacity:0.55;
+      transform: translateX(-10%) scale(1.06);
+      filter: grayscale(0.05) brightness(0.72) contrast(0.9);
+    }
+
+    /* Starry Night (right, bluish) */
+    .art-bg::after{
+      background-image: url("https://upload.wikimedia.org/wikipedia/commons/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg");
+      opacity:0.5;
+      transform: translateX(10%) scale(1.06);
+      filter: hue-rotate(200deg) brightness(0.9) contrast(0.95);
+    }
+
+    /* subtle slow float so background isn't dead */
+    @keyframes artFloat {
+      0% { transform: translateY(0) scale(1.05); }
+      50% { transform: translateY(-10px) scale(1.055); }
+      100% { transform: translateY(0) scale(1.05); }
+    }
+    .art-bg { animation: artFloat 18s ease-in-out infinite; }
+
+    /* ---------- top UI (linktree) ---------- */
+    .linktree-main{
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 40;
+      background: linear-gradient(180deg,#56402e,#4a3726);
+      color:var(--paper);
+      padding:10px 18px;
+      border-radius:26px;
+      text-decoration:none;
+      font-weight:600;
+      font-family: 'Libre Baskerville', serif;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .linktree-main:hover{ transform: translateY(-3px); box-shadow:0 14px 30px rgba(0,0,0,0.6) }
+
+    /* ---------- central content ---------- */
+    .stage{
+      position:relative;
+      z-index:10;
+      width:100%;
+      max-width:960px;
+      padding:40px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:auto;
+    }
+
+    /* piano (clickable) */
+    .piano {
+      width: 300px;
+      height: 200px;
+      background: linear-gradient(160deg, #443024 0%, #3b281d 60%);
+      border-radius: 14px 14px 22px 22px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.8), inset 0 -8px 24px rgba(0,0,0,0.45);
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition: transform .35s cubic-bezier(.2,.9,.2,1), box-shadow .25s ease;
+      user-select:none;
+    }
+    .piano:hover{ transform: translateY(-6px) scale(1.01); box-shadow: 0 28px 60px rgba(0,0,0,0.85) }
+
+    /* faux piano keys at bottom */
+    .piano::after{
+      content:"";
+      position:absolute;
+      left:12px; right:12px; bottom:10px;
+      height:48px;
+      background: repeating-linear-gradient(
+        to right,
+        #f7f7f5 0 24px,
+        #0b0b0b 24px 30px
+      );
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 -6px 18px rgba(0,0,0,0.35) inset;
+      z-index:2;
+    }
+
+    /* subtle warm glow (lightbulb) inside piano */
+    .piano .bulb{
+      position:absolute;
+      top:34%;
+      left:50%;
+      transform:translateX(-50%);
+      width:68px;height:68px;border-radius:50%;
+      background: radial-gradient(circle at 40% 35%, #ffeeaa 0%, #ffdd88 20%, rgba(255,200,130,0.06) 55%, transparent 60%);
+      box-shadow: 0 0 26px rgba(255,210,120,0.16), 0 0 60px rgba(255,200,100,0.06);
+      z-index:1;
+      animation: bulbPulse 3s ease-in-out infinite;
+    }
+    @keyframes bulbPulse{
+      0%{opacity:.7; transform: translateX(-50%) scale(.98)}
+      50%{opacity:1; transform: translateX(-50%) scale(1)}
+      100%{opacity:.7; transform: translateX(-50%) scale(.98)}
+    }
+
+    /* "open me" handwriting text on piano bottom */
+    .open-me {
+      position: absolute;
+      bottom: 12px; /* sits above the keys */
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Great Vibes', cursive;
+      font-size: 36px; /* Increased size */
+      color: #ffffff; /* Changed to white for better contrast */
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7), 0 4px 8px rgba(0, 0, 0, 0.5); /* Added shadow for depth */
+      letter-spacing: .02em;
+      z-index: 3;
+      pointer-events: none; /* click handled by piano container */
+      opacity: 1; /* Increased opacity */
+      /* small fade animation */
+      animation: openFade 3.8s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    @keyframes openFade{
+      0%{ opacity:0.65; transform:translateX(-50%) translateY(0) scale(1) }
+      50%{ opacity:1; transform:translateX(-50%) translateY(-2px) scale(1.01) }
+      100%{ opacity:0.65; transform:translateX(-50%) translateY(0) scale(1) }
+    }
+
+    /* Make the handwriting slightly curved (subtle arc) */
+    .open-me svg { display:block }
+    /* small-screen adjustments */
+    @media (max-width:540px){
+      .piano{ width:240px; height:160px }
+      .piano .bulb{ width:54px; height:54px; top:36% }
+      .open-me{ font-size:16px; bottom:10px }
+    }
+
+    /* ---------- letter modal ---------- */
+    .letter {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 60;
+      background: linear-gradient(180deg, rgba(9,9,9,0.98), rgba(16,16,16,1));
+      padding: clamp(26px,6vw,56px);
+      overflow-y:auto;
+      color:var(--paper);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .letter .card{
+      max-width:880px;
+      margin: 0 auto;
+      background: linear-gradient(180deg,#121212,#151212);
+      border-radius:18px;
+      padding: clamp(20px,3.5vw,38px);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.7), inset 0 0 60px rgba(58,47,33,0.25);
+      border: 1px solid rgba(180,150,110,0.06);
+    }
+
+    .letter h1{
+      font-size: clamp(28px,4.5vw,44px);
+      color:var(--accent);
+      margin-bottom:18px;
+      font-style:italic;
+      text-shadow: 0 0 8px rgba(166,132,98,0.14);
+      cursor:pointer;
+    }
+    .letter p{
+      color:var(--paper);
+      line-height:1.6;
+      font-size: clamp(16px,2.2vw,20px);
+      margin-bottom:12px;
+      text-shadow: 0 0 4px rgba(0,0,0,0.35);
+    }
+
+    .letter .footer{
+      color:#9e937c;
+      text-align:center;
+      margin-top:18px;
+      font-style:italic;
+    }
+
+    .controls{
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      margin-top:22px;
+    }
+    .btn{
+      background: linear-gradient(180deg,#55412f,#453226);
+      color:var(--paper);
+      padding:12px 22px;
+      border-radius:999px;
+      text-decoration:none;
+      font-weight:700;
+      cursor:pointer;
+      border:0;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+    }
+    .btn:hover{ transform: translateY(-4px) }
+
+    /* responsive: hide heavy background on tiny screens for perf */
+    @media (max-width:420px){
+      .art-bg{ opacity:0.35; filter: blur(6px) }
+      .linktree-main{ padding:8px 12px; right:12px; top:12px }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- dreamy blended art background (blurred) -->
+  <div class="art-bg" aria-hidden="true"></div>
+
+  <!-- linktree kept -->
+  <a class="linktree-main" href="https://linktr.ee/Ali25_" target="_blank" rel="noopener noreferrer">My Linktree</a>
+
+  <main class="stage" role="main" aria-labelledby="pianoTitle">
+    <!-- clickable piano -->
+    <button id="pianoBtn" class="piano" title="Click to open" aria-describedby="openHint">
+      <span class="bulb" aria-hidden="true"></span>
+      <!-- handwriting text visually on piano -->
+      <span class="open-me" aria-hidden="true">open me</span>
+    </button>
+  </main>
+
+  <!-- hidden letter modal -->
+  <aside id="loveLetter" class="letter" role="dialog" aria-modal="true" aria-labelledby="letterHeading">
+    <div class="card">
+      <h1 id="letterHeading" onclick="closeLetter()" title="Click to close">Hey</h1>
+
+      <p>Dearest,</p>
+      <p>From the moment our gazes intertwined, a subtle yet profound transformation unfurled within the depths of my heart. I had long believed that love was a treasure reserved for others, a notion that now seems but a distant folly.</p>
+      <p>Yet, here I stand, a humble soul, utterly captivated by your radiant smile and the kindness that you so effortlessly bestow upon those fortunate enough to cross your path. Your presence lingers in my thoughts, casting a warm glow upon even the most mundane of days.</p>
+      <p>As I pen these words, I find myself wishing for your happiness above all else, for it is your joy that brings light to my existence. I yearn for naught but to see you flourish, to witness the world embrace you as you so richly deserve.</p>
+      <p>Even should this missive remain unread, I trust it shall convey the earnest truth of my heart—a heart that beats in quiet admiration of you. I am but a mere admirer, yet I hope that my sentiments may find a place within your thoughts, if only for a fleeting moment.</p>
+      <p>In closing, I remain, with the utmost sincerity, your devoted admirer, ever hopeful for the chance to share in the beauty of your days.</p>
+      <p>Yours faithfully,</p>
+      <p>— A humble admirer</p>
+
+      <div class="footer">— Yours truly</div>
+
+      <div class="controls">
+        <button class="btn" onclick="closeLetter()">Return</button>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    const pianoBtn = document.getElementById('pianoBtn');
+    const loveLetter = document.getElementById('loveLetter');
+
+    function openLetter(){
+      loveLetter.style.display = 'block';
+      // lock scroll on body while open
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      // focus the letter for accessibility
+      loveLetter.querySelector('.card').focus?.();
+    }
+
+    function closeLetter(){
+      loveLetter.style.display = 'none';
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      // return focus to piano
+      pianoBtn.focus();
+    }
+
+    pianoBtn.addEventListener('click', openLetter);
+    // close when pressing Escape
+    document.addEventListener('keydown', (e)=> {
+      if(e.key === 'Escape' && loveLetter.style.display === 'block') closeLetter();
+    });
+
+    // also close when clicking the heading (as a little charm)
+    document.getElementById('letterHeading').addEventListener('click', closeLetter);
+
+    // small hint for screen readers
+    pianoBtn.setAttribute('aria-label', 'Open the letter. Click to open.');
+    pianoBtn.setAttribute('id','pianoTitle');
+  </script>
+
+</body>
+</html>
