@@ -1,351 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Hey</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(to bottom, #fdf6f0, #f5ece6);
+    color: #333;
+    line-height: 1.7;
+  }
 
-  <!-- Google Fonts: Libre Baskerville for body, Great Vibes for handwriting -->
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&family=Great+Vibes&display=swap" rel="stylesheet">
+  header {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: #e3d7c7;
+    position: relative;
+    overflow: hidden;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    color: #5a3e36;
+    margin-bottom: 1rem;
+  }
+  header::before {
+    content: '';
+    background-image: url('https://images.unsplash.com/photo-1603398938378-c1b2f2f0a7b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTI4NjB8MHwxfHNlYXJjaHwxfHxmbG93ZXJ8ZW58MHx8fHwxNjk2MjU1MzI3&ixlib=rb-4.0.3&q=80&w=1080');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+  }
 
-  <style>
-    :root{
-      --bg-dark: #121212;
-      --paper: #d9cfc4;
-      --accent: #a68462;
-      --wood: #4a3b2c;
-      --ink: #5a3e2b; /* deep brown ink */
-    }
+  section {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem 1rem;
+    background-color: rgba(255,255,255,0.85);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+  }
+  section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family: 'Libre Baskerville', serif;
-      background: var(--bg-dark);
-      color: var(--paper);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      user-select:none;
-    }
+  section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: #5a3e36;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  section p {
+    margin-bottom: 1rem;
+  }
 
-    /* ---------- full-screen dreamy blurred art layer ---------- */
-    .art-bg {
-      position:fixed;
-      inset:0;
-      z-index:0;
-      pointer-events:none;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-      filter: blur(10px) saturate(0.95) contrast(0.95);
-      opacity:0.55;
-    }
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: #e3d7c7;
+    font-family: 'Playfair Display', serif;
+    color: #5a3e36;
+  }
 
-    /* Use two images side-by-side blended together for painterly effect */
-    .art-bg::before,
-    .art-bg::after{
-      content:"";
-      position:absolute;
-      top:0;left:0;
-      width:100%;height:100%;
-      background-position:center;
-      background-size:cover;
-      background-repeat:no-repeat;
-      mix-blend-mode:overlay;
-      transform-origin:center;
-      transform:scale(1.05);
-    }
+  .flower {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 100px;
+    opacity: 0.4;
+    filter: drop-shadow(0 0 15px rgba(255,192,203,0.6));
+    animation: glow 2s infinite alternate;
+  }
 
-    /* Mona Lisa (left, darker) */
-    .art-bg::before{
-      background-image: url("https://upload.wikimedia.org/wikipedia/commons/6/6a/Mona_Lisa.jpg");
-      opacity:0.55;
-      transform: translateX(-10%) scale(1.06);
-      filter: grayscale(0.05) brightness(0.72) contrast(0.9);
-    }
+  @keyframes glow {
+    0% { filter: drop-shadow(0 0 10px rgba(255,192,203,0.4)); }
+    100% { filter: drop-shadow(0 0 25px rgba(255,182,193,0.8)); }
+  }
 
-    /* Starry Night (right, bluish) */
-    .art-bg::after{
-      background-image: url("https://upload.wikimedia.org/wikipedia/commons/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg");
-      opacity:0.5;
-      transform: translateX(10%) scale(1.06);
-      filter: hue-rotate(200deg) brightness(0.9) contrast(0.95);
-    }
-
-    /* subtle slow float so background isn't dead */
-    @keyframes artFloat {
-      0% { transform: translateY(0) scale(1.05); }
-      50% { transform: translateY(-10px) scale(1.055); }
-      100% { transform: translateY(0) scale(1.05); }
-    }
-    .art-bg { animation: artFloat 18s ease-in-out infinite; }
-
-    /* ---------- top UI (linktree) ---------- */
-    .linktree-main{
-      position: fixed;
-      top: 18px;
-      right: 18px;
-      z-index: 40;
-      background: linear-gradient(180deg,#56402e,#4a3726);
-      color:var(--paper);
-      padding:10px 18px;
-      border-radius:26px;
-      text-decoration:none;
-      font-weight:600;
-      font-family: 'Libre Baskerville', serif;
-      box-shadow:0 6px 18px rgba(0,0,0,0.6);
-      transition: transform .16s ease, box-shadow .16s ease;
-    }
-    .linktree-main:hover{ transform: translateY(-3px); box-shadow:0 14px 30px rgba(0,0,0,0.6) }
-
-    /* ---------- central content ---------- */
-    .stage{
-      position:relative;
-      z-index:10;
-      width:100%;
-      max-width:960px;
-      padding:40px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      pointer-events:auto;
-    }
-
-    /* piano (clickable) */
-    .piano {
-      width: 300px;
-      height: 200px;
-      background: linear-gradient(160deg, #443024 0%, #3b281d 60%);
-      border-radius: 14px 14px 22px 22px;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.8), inset 0 -8px 24px rgba(0,0,0,0.45);
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      transition: transform .35s cubic-bezier(.2,.9,.2,1), box-shadow .25s ease;
-      user-select:none;
-    }
-    .piano:hover{ transform: translateY(-6px) scale(1.01); box-shadow: 0 28px 60px rgba(0,0,0,0.85) }
-
-    /* faux piano keys at bottom */
-    .piano::after{
-      content:"";
-      position:absolute;
-      left:12px; right:12px; bottom:10px;
-      height:48px;
-      background: repeating-linear-gradient(
-        to right,
-        #f7f7f5 0 24px,
-        #0b0b0b 24px 30px
-      );
-      border-radius: 0 0 10px 10px;
-      box-shadow: 0 -6px 18px rgba(0,0,0,0.35) inset;
-      z-index:2;
-    }
-
-    /* subtle warm glow (lightbulb) inside piano */
-    .piano .bulb{
-      position:absolute;
-      top:34%;
-      left:50%;
-      transform:translateX(-50%);
-      width:68px;height:68px;border-radius:50%;
-      background: radial-gradient(circle at 40% 35%, #ffeeaa 0%, #ffdd88 20%, rgba(255,200,130,0.06) 55%, transparent 60%);
-      box-shadow: 0 0 26px rgba(255,210,120,0.16), 0 0 60px rgba(255,200,100,0.06);
-      z-index:1;
-      animation: bulbPulse 3s ease-in-out infinite;
-    }
-    @keyframes bulbPulse{
-      0%{opacity:.7; transform: translateX(-50%) scale(.98)}
-      50%{opacity:1; transform: translateX(-50%) scale(1)}
-      100%{opacity:.7; transform: translateX(-50%) scale(.98)}
-    }
-
-    /* "open me" handwriting text on piano bottom */
-    .open-me {
-      position: absolute;
-      bottom: 12px; /* sits above the keys */
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Great Vibes', cursive;
-      font-size: 36px; /* Increased size */
-      color: #ffffff; /* Changed to white for better contrast */
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7), 0 4px 8px rgba(0, 0, 0, 0.5); /* Added shadow for depth */
-      letter-spacing: .02em;
-      z-index: 3;
-      pointer-events: none; /* click handled by piano container */
-      opacity: 1; /* Increased opacity */
-      /* small fade animation */
-      animation: openFade 3.8s ease-in-out infinite;
-      transform-origin: center bottom;
-    }
-    @keyframes openFade{
-      0%{ opacity:0.65; transform:translateX(-50%) translateY(0) scale(1) }
-      50%{ opacity:1; transform:translateX(-50%) translateY(-2px) scale(1.01) }
-      100%{ opacity:0.65; transform:translateX(-50%) translateY(0) scale(1) }
-    }
-
-    /* Make the handwriting slightly curved (subtle arc) */
-    .open-me svg { display:block }
-    /* small-screen adjustments */
-    @media (max-width:540px){
-      .piano{ width:240px; height:160px }
-      .piano .bulb{ width:54px; height:54px; top:36% }
-      .open-me{ font-size:16px; bottom:10px }
-    }
-
-    /* ---------- letter modal ---------- */
-    .letter {
-      position: fixed;
-      inset: 0;
-      display: none;
-      z-index: 60;
-      background: linear-gradient(180deg, rgba(9,9,9,0.98), rgba(16,16,16,1));
-      padding: clamp(26px,6vw,56px);
-      overflow-y:auto;
-      color:var(--paper);
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .letter .card{
-      max-width:880px;
-      margin: 0 auto;
-      background: linear-gradient(180deg,#121212,#151212);
-      border-radius:18px;
-      padding: clamp(20px,3.5vw,38px);
-      box-shadow: 0 40px 120px rgba(0,0,0,0.7), inset 0 0 60px rgba(58,47,33,0.25);
-      border: 1px solid rgba(180,150,110,0.06);
-    }
-
-    .letter h1{
-      font-size: clamp(28px,4.5vw,44px);
-      color:var(--accent);
-      margin-bottom:18px;
-      font-style:italic;
-      text-shadow: 0 0 8px rgba(166,132,98,0.14);
-      cursor:pointer;
-    }
-    .letter p{
-      color:var(--paper);
-      line-height:1.6;
-      font-size: clamp(16px,2.2vw,20px);
-      margin-bottom:12px;
-      text-shadow: 0 0 4px rgba(0,0,0,0.35);
-    }
-
-    .letter .footer{
-      color:#9e937c;
-      text-align:center;
-      margin-top:18px;
-      font-style:italic;
-    }
-
-    .controls{
-      display:flex;
-      justify-content:center;
-      gap:14px;
-      margin-top:22px;
-    }
-    .btn{
-      background: linear-gradient(180deg,#55412f,#453226);
-      color:var(--paper);
-      padding:12px 22px;
-      border-radius:999px;
-      text-decoration:none;
-      font-weight:700;
-      cursor:pointer;
-      border:0;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.55);
-    }
-    .btn:hover{ transform: translateY(-4px) }
-
-    /* responsive: hide heavy background on tiny screens for perf */
-    @media (max-width:420px){
-      .art-bg{ opacity:0.35; filter: blur(6px) }
-      .linktree-main{ padding:8px 12px; right:12px; top:12px }
-    }
-
-  </style>
+  @media (max-width: 600px) {
+    header h1 { font-size: 2rem; }
+    section h2 { font-size: 1.5rem; }
+    .flower { width: 70px; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- dreamy blended art background (blurred) -->
-  <div class="art-bg" aria-hidden="true"></div>
+<!-- Background music: Chopin Nocturne No. 2 -->
+<audio id="bgMusic" autoplay loop>
+  <source src="https://www.orangefreesounds.com/wp-content/uploads/2016/02/Chopin-nocturne-op-9-no-2.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
 
-  <!-- linktree kept -->
-  <a class="linktree-main" href="https://linktr.ee/Ali25_" target="_blank" rel="noopener noreferrer">My Linktree</a>
+<header>
+  <h1>Her</h1>
+</header>
 
-  <main class="stage" role="main" aria-labelledby="pianoTitle">
-    <!-- clickable piano -->
-    <button id="pianoBtn" class="piano" title="Click to open" aria-describedby="openHint">
-      <span class="bulb" aria-hidden="true"></span>
-      <!-- handwriting text visually on piano -->
-      <span class="open-me" aria-hidden="true">open me</span>
-    </button>
-  </main>
+<section>
+  <h2>Chapter 1: The Tree in Silence</h2>
+  <p>In the quiet hum of the second-year classroom, among the shuffle of papers and soft scratching of pencils, I sat unnoticed by most. I was still discovering myself—dark-haired, a little rough around the edges, and carrying an energy that was quietly my own. It was the time when friendship was tentative, laughter shared in bursts, and eyes often wandered with curiosity.</p>
+  <p>And then there was Nour. An artist with a gentle hand, a quiet heart, and a mind that noticed things others didn’t. She picked up her pencil one afternoon and began to draw. Not a random doodle, not a simple sketch—this was alive. Every line shaded with care, every branch breathing life. And at the top, she wrote two words: <em>I Mahmoud</em>. Beside them, a heart, small but perfect.</p>
+  <p>It wasn’t just the drawing that lingered in memory—on the <strong>second day of the first term</strong>, she had also asked about my birthday, a small question that revealed she noticed me more than anyone else. That subtle curiosity, that tiny gesture, made me feel quietly seen in a way that mattered more than words could say.</p>
+  <p>I didn’t know how to feel when I saw it later. Surprise, confusion, a strange warmth in my chest—these emotions collided all at once. The tree was hers, but in some small, quiet way, it had become ours. It was a secret. A whisper. A spark.</p>
+  <p>Neither of us spoke of it then. The drawing rested in the quiet corners of memory, a tiny monument to something unspoken, something budding, yet unclaimed. And so it remained, hidden in time, a fragile beginning that would echo far beyond that second-year classroom.</p>
+</section>
 
-  <!-- hidden letter modal -->
-  <aside id="loveLetter" class="letter" role="dialog" aria-modal="true" aria-labelledby="letterHeading">
-    <div class="card">
-      <h1 id="letterHeading" onclick="closeLetter()" title="Click to close">Hey</h1>
+<section>
+  <h2>Chapter 2: A Quiet Curiosity and a Boundary</h2>
+  <p>The new term had just begun, and with it, a faint sense of nervous excitement floated through the classroom. Time moved quickly, and by the start of third prep, life had grown more complicated. I found myself wrestling with my own thoughts, weighed down by mental storms that clouded my days. And still, my mind often wandered to Nour—the girl who had once drawn a tree for me, left a secret trail of care, and quietly asked about the day I was born.</p>
+  <p>Summoning courage, I asked her about her Instagram. She paused, hesitated, and then simply said <em>“okay”</em>—but did not give me the name. Her response carried caution, a soft line drawn between friendship and something more. Later, she spoke, gently but firmly: <em>“I don’t accept boys.”</em></p>
+  <p>And then, almost shyly, she added <em>“sorry.”</em></p>
+  <p>That single word carried more meaning than she might have imagined. It wasn’t rejection—it was a soft shield, a careful attempt not to hurt. I, understanding the weight of her honesty and the care in her tone, smiled quietly and replied, <em>“No worries, it’s your choice.”</em></p>
+  <p>I left swiftly after, leaving her space, letting the silence speak for me. That brief interaction etched itself into memory—a lesson in patience, understanding, and the quiet power of respecting someone’s heart.</p>
+</section>
 
-      <p>Dearest,</p>
-      <p>From the moment our gazes intertwined, a subtle yet profound transformation unfurled within the depths of my heart. I had long believed that love was a treasure reserved for others, a notion that now seems but a distant folly.</p>
-      <p>Yet, here I stand, a humble soul, utterly captivated by your radiant smile and the kindness that you so effortlessly bestow upon those fortunate enough to cross your path. Your presence lingers in my thoughts, casting a warm glow upon even the most mundane of days.</p>
-      <p>As I pen these words, I find myself wishing for your happiness above all else, for it is your joy that brings light to my existence. I yearn for naught but to see you flourish, to witness the world embrace you as you so richly deserve.</p>
-      <p>Even should this missive remain unread, I trust it shall convey the earnest truth of my heart—a heart that beats in quiet admiration of you. I am but a mere admirer, yet I hope that my sentiments may find a place within your thoughts, if only for a fleeting moment.</p>
-      <p>In closing, I remain, with the utmost sincerity, your devoted admirer, ever hopeful for the chance to share in the beauty of your days.</p>
-      <p>Yours faithfully,</p>
-      <p>— A humble admirer</p>
+<section>
+  <h2>Chapter 3: Messages, Gifts, and Quiet Devotion</h2>
+  <p>As the year moved forward, the rhythms of school life carried Nour and me along separate paths, yet my thoughts remained tethered to her. After the third prep exams, unable to contain my feelings, I sent her messages—careful, heartfelt, a quiet release of emotions I had carried in secret. Words that spoke of admiration, of curiosity, of longing, and of a bond I hoped she might feel too.</p>
+  <p>Months later, on <strong>the 25th of November, 2023</strong>, I gave her a birthday gift—a simple token, yet chosen with thought, care, and an unspoken devotion. It was not extravagant, but it carried the weight of attention, affection, and the desire to make her feel remembered. She may not have openly said much in return, but the gesture lingered in the delicate spaces between us, a silent reminder of the respect, admiration, and hope I had nurtured.</p>
+  <p>Through these moments, I learned patience, humility, and the quiet art of caring from afar. Even when words were unspoken, or when responses were minimal, my heart remained steadfast, quietly devoted, and resilient. The threads of our story were delicate, yet undeniably strong, weaving a narrative of longing, care, and silent love that would not fade with time.</p>
+</section>
 
-      <div class="footer">— Yours truly</div>
+<section>
+  <h2>Chapter 4: Paths Diverging, Hearts Lingering</h2>
+  <p>The summer brought new rhythms and responsibilities. Nour began working at a clinic, tending to others with care and precision, her days full of learning, growth, and independence. I, meanwhile, spent my time helping my mother in the bookstore—stacking books, assisting customers, quietly building my own patience, discipline, and character. Though our daily worlds were different, the invisible threads that connected us remained taut, pulsing with memories of shared glances, gifts, and unspoken feelings.</p>
+  <p>Though separated by circumstance, my thoughts often wandered to Nour. The tree, the birthday gift, the soft apology, and her shy curiosity about my birthday—all lingered in my mind, reminding me of the delicate intimacy that had quietly formed between us. And in turn, she, perhaps unknowingly, carried traces of me too: the memory of someone who had shown care, patience, and respect beyond what many others could offer.</p>
+  <p>As the new term approached, both of us would return to school changed—older, a little wiser, with new experiences that shaped our hearts. And yet, despite time, distance, and life’s shifting currents, the quiet connection between us remained, a thread of possibility that could one day be woven into something fuller, something mutual, something truly ours.</p>
+</section>
 
-      <div class="controls">
-        <button class="btn" onclick="closeLetter()">Return</button>
-      </div>
-    </div>
-  </aside>
+<section>
+  <h2>Chapter 5: Present-Day Longing and Hope</h2>
+  <p>Now, the story finds me in the quiet of my own reflections. Thoughts of Nour have grown deeper, more persistent, threading through each day with an intensity I cannot ignore. The messages I sent, the moments we shared, the birthday gift—all echo in the chambers of memory, reminders of a connection that has never truly faded.</p>
+  <p>She, too, occupies a space in my mind that no one else can reach. Her soft gestures, the way she once drew me, the gentle apologies and careful boundaries—all of it forms a mosaic of her presence in my heart. I find myself caught between longing and patience, hope and restraint. Every glance, every smile, every interaction becomes a small universe of possibility, a reminder that the story is not yet finished.</p>
+  <p>Though uncertainty lingers—questions of timing, feelings, and readiness—my heart remains steadfast. I understand now, more than ever, that love is not only about grand gestures, but also about respect, subtlety, and the quiet courage to wait while the world turns. And so, I hold onto hope, a steady flame, believing that one day, our hearts may find a meeting point, soft and certain, where all the past whispers finally become a shared story.</p>
+</section>
 
-  <script>
-    const pianoBtn = document.getElementById('pianoBtn');
-    const loveLetter = document.getElementById('loveLetter');
+<section>
+  <h2>Chapter 6: Epilogue – The Story Yet to Come</h2>
+  <p>The classrooms, the tree, the quiet smiles, and the small gifts—they are chapters already written. But the pages ahead remain blank, waiting for both of us to fill them with shared moments, laughter, and whispered secrets.</p>
+  <p>I imagine a day when Nour walks past me in the hallway, our eyes meeting not with hesitation, but with recognition—recognition of all the small gestures, all the unspoken words, all the silent devotion that has lingered for years. Perhaps we will talk, laugh, and find that the bond that began so quietly in prep school has only grown stronger, patiently nurtured by distance, time, and mutual respect.</p>
+  <p>In this future, the boundaries once drawn softly, the apologies once whispered, and the shy curiosities once asked—like my birthday—become bridges, guiding us toward one another. My steadfast heart, full of care and patience, and her gentle, thoughtful nature may finally intertwine, creating a story that is ours alone.</p>
+  <p>And so, the tale of I and Nour is not one of endings, but of possibilities—of love that has waited, quietly, for the perfect moment, ready to blossom fully when the world allows. <strong>And the story continues…</strong></p>
+</section>
 
-    function openLetter(){
-      loveLetter.style.display = 'block';
-      // lock scroll on body while open
-      document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-      // focus the letter for accessibility
-      loveLetter.querySelector('.card').focus?.();
-    }
+<img src="https://images.unsplash.com/photo-1617196030081-6db59cc33d9c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200" alt="Flower" class="flower">
 
-    function closeLetter(){
-      loveLetter.style.display = 'none';
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-      // return focus to piano
-      pianoBtn.focus();
-    }
+<footer>
+  <p>And the story continues…</p>
+</footer>
 
-    pianoBtn.addEventListener('click', openLetter);
-    // close when pressing Escape
-    document.addEventListener('keydown', (e)=> {
-      if(e.key === 'Escape' && loveLetter.style.display === 'block') closeLetter();
+<script>
+  // Fade-in sections on scroll
+  const sections = document.querySelectorAll('section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
     });
+  }, { threshold: 0.2 });
 
-    // also close when clicking the heading (as a little charm)
-    document.getElementById('letterHeading').addEventListener('click', closeLetter);
-
-    // small hint for screen readers
-    pianoBtn.setAttribute('aria-label', 'Open the letter. Click to open.');
-    pianoBtn.setAttribute('id','pianoTitle');
-  </script>
+  sections.forEach(section => observer.observe(section));
+</script>
 
 </body>
 </html>
